@@ -266,7 +266,7 @@ export const theatres = [
       { time: "6:45 PM", label: "RECLINERS", highlight: true },
       { time: "11:35 PM", label: "RECLINERS" },
       { time: "7:45 PM", label: "RECLINERS" },
-      { time: "12:35 PM", label: "RECLINERS" }
+      { time: "12:35 PM", label: "RECLINERS" },
     ],
   },
   {
@@ -327,9 +327,9 @@ export const ordersData = [
     bookingTime: "Apr 29 2025 07:46PM",
     paymentMethod: "Credit/Debit Card",
     poster: m11,
-    total: 607.10,
-    ticket: 495.00,
-    fee: 112.10
+    total: 607.1,
+    ticket: 495.0,
+    fee: 112.1,
   },
   {
     id: "XYCKAJS",
@@ -342,13 +342,24 @@ export const ordersData = [
     bookingTime: "Apr 25 2025 04:00PM",
     paymentMethod: "Credit/Debit Card",
     poster: m12,
-    total: 607.10,
-    ticket: 495.00,
-    fee: 112.10
-  }
+    total: 607.1,
+    ticket: 495.0,
+    fee: 112.1,
+  },
 ];
 
-export const filters = ["2D", "3D", "Wheelchair Friendly", "Premium Seats", "Recliners", "IMAX", "PVR PXL", "4DX", "Laser", "Dolby Atmos"];
+export const filters = [
+  "2D",
+  "3D",
+  "Wheelchair Friendly",
+  "Premium Seats",
+  "Recliners",
+  "IMAX",
+  "PVR PXL",
+  "4DX",
+  "Laser",
+  "Dolby Atmos",
+];
 
 export const tabs = ["Profile", "Your Orders"];
 
