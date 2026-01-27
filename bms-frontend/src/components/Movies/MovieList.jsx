@@ -1,13 +1,14 @@
 import React from "react";
 import { allMovies, languages } from "../../utils/constants";
+import MovieCard from "./MovieCard";
 
 const MovieList = () => {
   return (
     <div className="w-full md:w-3/4 p-4">
       <div className="flex flex-wrap gap-2 mb-4">
-        {languages.map((lang, i) => (
+        {languages.map((lang) => (
           <span
-            key={i}
+            key={lang}
             className="bg-white border border-gray-200 text-[#f74362] 
             py-1 px-3 rounded-[24px] 
             text-sm cursor-pointer hover:bg-gray-100"
@@ -28,8 +29,8 @@ const MovieList = () => {
 
       <div className="flex flex-wrap gap-6">
         {/* Movie card */}
-        {allMovies.map((movie, i) => (
-          <MovieCard key={i} {...movie} />
+        {allMovies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
         ))}
       </div>
     </div>
