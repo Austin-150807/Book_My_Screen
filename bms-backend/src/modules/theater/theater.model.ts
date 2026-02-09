@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { IThreater } from "./theater.interface";
+import { ITheatre } from "./theater.interface";
 
-const theaterSchema = new mongoose.Schema<IThreater>(
+const theaterSchema = new mongoose.Schema<ITheatre>(
   {
     name: { type: String, required: true },
     location: { type: String, required: true },
@@ -12,4 +12,4 @@ const theaterSchema = new mongoose.Schema<IThreater>(
   { timestamps: true },
 );
 
-export const TheaterModel = mongoose.model<IThreater>("Theater", theaterSchema);
+export const TheaterModel = mongoose.model<ITheatre>("Theater", theaterSchema);

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as ShowService from "./show.service";
+import { stat } from "fs";
 
 // 1. Create a show
 export const createShow = async (

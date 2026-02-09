@@ -1,31 +1,45 @@
 import React from "react";
 import m4 from "../assets/m4.avif";
 import TheaterTimings from "../components/Movies/TheaterTimings";
+// import { filters } from "../utils/constants";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getMovieById } from "../apis/index";
+import { useParams } from "react-router-dom";
 
-const movie = {
-  id: 4,
-  title: "F1: The Movie",
-  genre: ["Action", "Drama", "Sports"],
-  rating: 9.5,
-  votes: "6.8K",
-  img: m4,
-  languages: ["English", "Hindi", "Tamil", "Telugu"],
-  format: ["2D", "3D", "IMAX 3D"],
-  certification: "UA16+",
-  duration: "2h 24m",
-  releaseDate: "2023-09-15",
-  description:
-    "F1: The Movie is a pulse-pounding drama that immerses audiences in the electrifying world of Formula 1 racing. At its heart is the story of a gifted yet rebellious driver, battling fierce rivals and personal demons as he fights for glory both on and off the track. With spectacular racing sequences, raw emotion, and a narrative fueled by ambition, teamwork, and redemption, the film delivers an unforgettable ride.",
-};
+// const movie?.data.movie = {
+//   id: 4,
+//   title: "F1: The Movie",
+//   genre: ["Action", "Drama", "Sports"],
+//   rating: 9.5,
+//   votes: "6.8K",
+//   img: m4,
+//   languages: ["English", "Hindi", "Tamil", "Telugu"],
+//   format: ["2D", "3D", "IMAX 3D"],
+//   certification: "UA16+",
+//   duration: "2h 24m",
+//   releaseDate: "2023-09-15",
+//   description:
+//     "F1: The Movie is a pulse-pounding drama that immerses audiences in the electrifying world of Formula 1 racing. At its heart is the story of a gifted yet rebellious driver, battling fierce rivals and personal demons as he fights for glory both on and off the track. With spectacular racing sequences, raw emotion, and a narrative fueled by ambition, teamwork, and redemption, the film delivers an unforgettable ride.",
+// };
 
 const MovieDetails = () => {
+  const { id } = useParams();
+
+  const { data: movie, isError } = useQuery({
+    queryKey: ["movie?.data.movie", id],
+    queryFn: async () => await getMovieById(id),
+    placeholderData: keepPreviousData,
+  });
+
+  console.log(movie);
+
   return (
     <>
       {/* ================= MOVIE BANNER ================= */}
       <div
         className="relative text-white px-4 py-10"
         style={{
-          backgroundImage: `url(${movie.img})`,
+          backgroundImage: `url(${movie?.data.movie.posterUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -38,18 +52,24 @@ const MovieDetails = () => {
         <div className="relative z-10 max-w-7xl mx-auto flex gap-10">
           {/* Poster */}
           <img
-            src={movie.img}
-            alt={movie.title}
+            src={movie?.data.movie.posterUrl}
+            alt={movie?.data.movie.title}
             className="w-52 rounded-xl shadow-xl"
           />
 
           {/* Details */}
           <div className="flex-1">
-            <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
+            <h1 className="text-4xl font-bold mb-4">
+              {movie?.data.movie.title}
+            </h1>
 
             <div className="bg-[#3a3a3a] inline-flex items-center gap-3 px-4 py-2 rounded-md mb-4 text-sm">
-              <span className="text-pink-500 font-bold">★ {movie.rating}</span>
-              <span className="text-gray-300">({movie.votes} votes)</span>
+              <span className="text-pink-500 font-bold">
+                ★ {movie?.data.movie.rating}
+              </span>
+              <span className="text-gray-300">
+                ({movie?.data.movie.votes} votes)
+              </span>
               <button className="bg-[#2f2f2f] px-3 py-1 rounded-md">
                 Rate Now
               </button>
@@ -57,20 +77,22 @@ const MovieDetails = () => {
 
             <div className="flex gap-3 mb-4 text-sm">
               <span className="bg-[#3a3a3a] px-3 py-1 rounded">
-                {movie.format.join(", ")}
+                {movie?.data.movie.format.join(", ")}
               </span>
               <span className="bg-[#3a3a3a] px-3 py-1 rounded">
-                {movie.languages.join(", ")}
+                {movie?.data.movie.languages.join(", ")}
               </span>
             </div>
 
             <p className="text-gray-300 mb-4 text-sm">
-              {movie.duration} ● {movie.genre.join(", ")} ●{" "}
-              {movie.certification} ● {movie.releaseDate}
+              {movie?.data.movie.duration} ●{" "}
+              {movie?.data.movie.genre.join(", ")} ●{" "}
+              {movie?.data.movie.certification} ●{" "}
+              {movie?.data.movie.releaseDate}
             </p>
 
             <h2 className="text-xl font-bold mb-2">About the movie</h2>
-            <p className="text-gray-100">{movie.description}</p>
+            <p className="text-gray-100">{movie?.data.movie.description}</p>
           </div>
 
           {/* Share button */}
@@ -131,7 +153,6 @@ const MovieDetails = () => {
           {/* ================= THEATRES & TIMINGS ================= */}
           <TheaterTimings />
         </div>
-        
       </div>
     </>
   );
