@@ -151,7 +151,7 @@ const MovieDetails = () => {
             </span>
           </div>
           {/* ================= THEATRES & TIMINGS ================= */}
-          <TheaterTimings />
+          <TheaterTimings movieId={id} />
         </div>
       </div>
     </>
