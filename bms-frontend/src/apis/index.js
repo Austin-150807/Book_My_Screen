@@ -13,4 +13,4 @@ export const getShowsByMovieAndLocation = (movieId, state, date) =>
       date,
     },
   });
-export const getShowById = (date) => axiosWrapper.get(`/shows/${data}`);
+export const getShowById = (data) => axiosWrapper.get(`/shows/${data}`);
