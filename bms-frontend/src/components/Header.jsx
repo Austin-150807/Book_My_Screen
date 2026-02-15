@@ -3,11 +3,25 @@ import mainLogo from "../assets/main-icon.png";
 import { FaSearch } from "react-icons/fa";
 import { useLocation } from "../context/LocationContext";
 import map from "../assets/pin.gif";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import SignInModel from "./SignInModel";
+import { useAuth } from "../context/AuthContext";
+import { axiosWrapper } from "../apis/axiosWrapper";
 
 const Header = () => {
   const { location, loading, error } = useLocation();
+  const { toggleModal, user, setUser } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axiosWrapper.post("/auth/logout");
+      setUser(null);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="w-full text-sm bg-white">
@@ -32,6 +46,7 @@ const Header = () => {
               <FaSearch className="absolute right-2 top-2.5 text-gray-500" />
             </div>
           </div>
+
           {/* Right Part */}
           <div className="flex items-center space-x-6">
             <div className="text-sm font-medium cursor-pointer flex items-center space-x-2">
@@ -39,12 +54,26 @@ const Header = () => {
               {!loading && !error && <p>{location} ▼</p>}
               {error && <p className="text-red-500">{error}</p>}
             </div>
-            <button className="bg-[#f84464] text-white px-4 py-1.5 rounded text-sm">
-              Sign in
-            </button>
+
+            {!user ? (
+              <button
+                onClick={toggleModal}
+                className="bg-[#f84464] text-white px-4 py-1.5 rounded text-sm cursor-pointer"
+              >
+                Sign in
+              </button>
+            ) : (
+              <div
+                onClick={() => navigate("/profile")}
+                className="w-9 h-9 bg-[#f84464] text-white rounded-full flex items-center justify-center cursor-pointer font-semibold"
+              >
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
       {/* Bottom Navbar */}
       <div className="bg-[#f2f2f2] px-4 md:px-8">
         <div className="max-w-screen-xl mx-auto flex justify-between items-center py-2 text-gray-700">
@@ -71,6 +100,8 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <SignInModel />
     </div>
   );
 };

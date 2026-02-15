@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { LocationProvider } from "./context/LocationContext.jsx";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,9 @@ createRoot(document.getElementById("root")).render(
     <Router>
       <QueryClientProvider client={queryClient}>
         <LocationProvider>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </LocationProvider>
       </QueryClientProvider>
     </Router>

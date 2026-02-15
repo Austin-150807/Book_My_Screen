@@ -2,7 +2,7 @@ import { IUser } from "./user.interface";
 import { UserModel } from "./user.model";
 
 // Create User
-export const createUser = async (user: IUser): Promise<IUser> => {
+export const createUser = async (user: IUser | any): Promise<IUser> => {
   const newUser = new UserModel(user);
   return await newUser.save();
 };
@@ -15,6 +15,11 @@ export const getAllUsers = async (): Promise<IUser[]> => {
 // Get Single User
 export const getUserById = async (id: string): Promise<IUser | null> => {
   return await UserModel.findById(id);
+};
+
+// Get User by Email
+export const getUserByEmail = async (email: string): Promise<IUser | null> => {
+  return await UserModel.findOne({ email });
 };
 
 // Activate User

@@ -1,12 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { tabs } from "../utils/constants";
 import { IoMdAdd } from "react-icons/io";
 import { IoIosLogOut } from "react-icons/io";
 import { FiEdit } from "react-icons/fi";
 import BookingHistory from "../components/profile/BookingHistory";
+import { useAuth } from "../context/AuthContext";
+import { axiosWrapper } from "../apis/axiosWrapper";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Profile");
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // 🔥 This enables direct opening of Orders tab
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+
+    if (tab === "orders") {
+      setActiveTab("Your Orders");
+    } else {
+      setActiveTab("Profile");
+    }
+  }, [location.search]);
+
+  const handleLogout = async () => {
+    try {
+      await axiosWrapper.post("/auth/logout");
+      setUser(null);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Please login first.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -16,9 +52,9 @@ const Profile = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-1 cursor-pointe ${
+              className={`pb-1 cursor-pointer ${
                 activeTab === tab
-                  ? "text-[#f74565] "
+                  ? "text-[#f74565]"
                   : "text-gray-600 hover:text-black"
               }`}
             >
@@ -27,35 +63,36 @@ const Profile = () => {
           ))}
         </div>
       </div>
+
       <div className="min-h-screen py-10 px-4 bg-gray-100">
         <div className="max-w-6xl mx-auto">
-          {/* Profile Section */}
           {activeTab === "Profile" && (
             <>
-              {/* Headers */}
+              {/* Header Section */}
               <div className="bg-gradient-to-r from-gray-800 to-[#f74565] rounded-t-md px-6 py-6 flex items-center gap-6 text-white">
-                <div
-                  className="relative w-20 h-20 border-4
-                 border-white rounded-full 
-                 flex items-center justify-center bg-white text-gray-600"
-                >
+                <div className="relative w-20 h-20 border-4 border-white rounded-full flex items-center justify-center bg-white text-gray-600">
                   <IoMdAdd size={24} />
                 </div>
+
                 <div className="mt-2">
-                  <h2 className="text-2xl font-bold">Hi, Austin.S</h2>
-                  <small className="underline cursor-pointer">
+                  <h2 className="text-2xl font-bold">Hi, {user.name}</h2>
+                  <small
+                    onClick={handleLogout}
+                    className="underline cursor-pointer"
+                  >
                     <IoIosLogOut size={20} className="inline" /> Logout
                   </small>
                 </div>
               </div>
 
-              {/* Account Details Section */}
-              <div className="bg-white px-6 py-6 rounded-b-md ">
+              {/* Account Details */}
+              <div className="bg-white px-6 py-6 rounded-b-md">
                 <h3 className="text-lg font-semibold mb-4">Account Details</h3>
+
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-sm font-normal">Email Address : </p>
+                  <p className="text-sm font-normal">Email Address :</p>
                   <div className="flex items-center gap-2">
-                    <span>testemail@gamil.com</span>
+                    <span>{user.email}</span>
                     <span className="text-green-600 text-xs bg-green-100 px-2 rounded">
                       Verified
                     </span>
@@ -63,10 +100,10 @@ const Profile = () => {
                   <FiEdit className="text-pink-500 cursor-pointer" />
                 </div>
 
-                <div className=" flex items-center justify-between">
-                  <p className="text-sm font-normal">Mobile Number : </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-normal">Mobile Number :</p>
                   <div className="flex items-center gap-2">
-                    <span>+91 -9876543210</span>
+                    <span>{user.phone}</span>
                     <span className="text-green-600 text-xs bg-green-100 px-2 rounded">
                       Verified
                     </span>
@@ -75,17 +112,18 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Personal Details Section */}
+              {/* Personal Details */}
               <div className="bg-white p-6 mt-6 rounded-b-md">
                 <h3 className="text-lg font-semibold mb-4">Personal Details</h3>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-normal">Name</label>
                     <input
                       type="text"
-                      value="Austin.S"
+                      value={user.name}
                       readOnly
-                      className="w-full mt-1 border  border-gray-200 rounded-lg px-3 py-2"
+                      className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2"
                     />
                   </div>
 
@@ -95,22 +133,19 @@ const Profile = () => {
                     </label>
                     <input
                       type="date"
-                      className="w-full mt-1 border  border-gray-200 rounded-lg px-3 py-2"
+                      className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2"
                     />
                   </div>
+
                   <div>
                     <label className="text-sm font-normal">
                       Identity (Optional)
                     </label>
                     <div className="flex gap-2 mt-1">
-                      <button
-                        className={`px-4 py-1 border border-gray-200 rounded-lg bg-white`}
-                      >
+                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
                         Woman
                       </button>
-                      <button
-                        className={`px-4 py-1 border border-gray-200 rounded-lg bg-white`}
-                      >
+                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
                         Man
                       </button>
                     </div>
@@ -121,14 +156,10 @@ const Profile = () => {
                       Married ? (Optional)
                     </label>
                     <div className="flex gap-2 mt-1">
-                      <button
-                        className={`px-4 py-1 border border-gray-200 rounded-lg bg-white`}
-                      >
+                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
                         Yes
                       </button>
-                      <button
-                        className={`px-4 py-1 border border-gray-200 rounded-lg bg-white`}
-                      >
+                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
                         No
                       </button>
                     </div>
@@ -138,7 +169,6 @@ const Profile = () => {
             </>
           )}
 
-          {/* Booking Section */}
           {activeTab === "Your Orders" && <BookingHistory />}
         </div>
       </div>

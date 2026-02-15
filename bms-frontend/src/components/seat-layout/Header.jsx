@@ -1,13 +1,15 @@
 import mainLogo from "../../assets/main-icon.png";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useAuth } from "../../context/AuthContext";
 
 dayjs.extend(customParseFormat);
 
 const Header = ({ showData, type }) => {
   const navigate = useNavigate();
-  console.log("showData.date:", showData?.date);
+  const { user, toggleModal } = useAuth();
+
   return (
     <>
       <div className="border-b border-gray-200 shadow-sm bg-white">
@@ -20,6 +22,7 @@ const Header = ({ showData, type }) => {
             alt="bookMyScreen"
             className="h-6 md:h-8 object-contain cursor-pointer"
           />
+
           {type === "checkout" ? (
             <div>
               <h2 className="font-bold text-gray-900 text-lg md:text-xl">
@@ -39,11 +42,25 @@ const Header = ({ showData, type }) => {
             </div>
           )}
 
-          <button className="bg-[#f84464] cursor-pointer text-white px-4 py-1.5 rounded text-sm">
-            Sign in
-          </button>
+          {/* Right Button */}
+          {!user ? (
+            <button
+              onClick={toggleModal}
+              className="bg-[#f84464] cursor-pointer text-white px-4 py-1.5 rounded text-sm"
+            >
+              Sign in
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/profile")}
+              className="w-10 h-10 bg-[#f84464] text-white rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
+            >
+              {user.name?.charAt(0).toUpperCase()}
+            </button>
+          )}
         </div>
       </div>
+
       {/* Show Timings */}
       {type !== "checkout" && (
         <>

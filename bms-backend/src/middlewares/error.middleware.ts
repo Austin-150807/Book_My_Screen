@@ -2,34 +2,21 @@ import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 
 export const globalErrorHandler = (
-  err: unknown,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // Default Response
-  let statusCode = 500;
-  let message = "Something went wrong!";
-  let errors: {
-    field?: string;
-    message: string;
-  }[] = [];
+  let statusCode = err.status || err.statusCode || 500;
+  let message = err.message || "Something went wrong!";
 
-  // Zod Error Handling
   if (err instanceof ZodError) {
     statusCode = 400;
     message = "Validation error!";
-    errors = err.errors.map((e) => ({
-      field: e.path.join("."),
-      message: e.message,
-    }));
-  } else if (err instanceof Error) {
-    message = err.message;
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    errors,
   });
 };

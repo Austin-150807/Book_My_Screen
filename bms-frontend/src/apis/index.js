@@ -14,3 +14,6 @@ export const getShowsByMovieAndLocation = (movieId, state, date) =>
     },
   });
 export const getShowById = (data) => axiosWrapper.get(`/shows/${data}`);
+export const getMyBookings = async () => {
+  return await axiosWrapper.get("/bookings/my-bookings");
+};

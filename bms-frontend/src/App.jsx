@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import SeatLayout from "./pages/SeatLayout";
 import { useMatch } from "react-router-dom";
 import Checkout from "./pages/Checkout";
+import BookingSuccess from "./pages/BookingSuccess";
 
 function App() {
   // Hide header/footer only on seat layout page
@@ -39,6 +40,7 @@ function App() {
               path="/shows/:showId/:state/checkout"
               element={<Checkout />}
             />
+            <Route path="/booking-success" element={<BookingSuccess />} />
           </Routes>
         </main>
         {!isSeatLayoutPage && !isCheckoutPage && <Footer />}
