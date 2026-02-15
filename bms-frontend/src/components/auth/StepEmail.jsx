@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { axiosWrapper } from "../../apis/axiosWrapper";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const StepEmail = ({ onNext }) => {
   const [emailInput, setEmailInput] = useState("");
@@ -10,6 +11,11 @@ const StepEmail = ({ onNext }) => {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
+
+    if (!emailInput) {
+      toast.error("Please enter your email");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -21,9 +27,15 @@ const StepEmail = ({ onNext }) => {
       setEmail(res.data.email);
       setHash(res.data.hash);
 
-      onNext();
+      // 🔥 Beautiful success message
+      toast.success(`OTP sent to ${emailInput} ✨`);
+
+      // Slight delay before moving to OTP step
+      setTimeout(() => {
+        onNext();
+      }, 900);
     } catch (err) {
-      alert("Failed to send OTP");
+      toast.error("Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -53,12 +65,13 @@ const StepEmail = ({ onNext }) => {
       >
         {loading ? "Sending..." : "Continue"}
       </button>
+
       <p className="text-[#c4c5c5] text-center m-auto text-[12px]">
-        By entering your email id, you're agreeing to our
+        By entering your email id, you're agreeing to our{" "}
         <a href="" className="text-[#f74565]">
           Terms of Service
         </a>{" "}
-        and
+        and{" "}
         <a href="" className="text-[#f74565]">
           Privacy Policy
         </a>

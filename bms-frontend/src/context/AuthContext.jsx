@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { axiosWrapper } from "../apis/axiosWrapper";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
   const [showModal, setShowModal] = useState(false);
-
   const [email, setEmail] = useState("");
   const [hash, setHash] = useState("");
   const [user, setUser] = useState(null);
@@ -16,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     setShowModal(!showModal);
   };
 
-  // 🔥 Persist login on refresh
+  // Persist login on refresh
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -31,6 +33,13 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser();
   }, []);
+
+  // 🔥 NEW: React when user changes
+  useEffect(() => {
+    if (user?.role === "admin") {
+      navigate("/admin");
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider

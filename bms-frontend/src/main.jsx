@@ -6,6 +6,7 @@ import App from "./App.jsx";
 import { LocationProvider } from "./context/LocationContext.jsx";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
         <LocationProvider>
           <AuthProvider>
             <App />
+            <Toaster position="top-center" />
           </AuthProvider>
         </LocationProvider>
       </QueryClientProvider>

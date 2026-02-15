@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { axiosWrapper } from "../../apis/axiosWrapper";
 import { useAuth } from "../../context/AuthContext";
 import { useCountdown } from "../../hooks/useCountdown";
@@ -10,15 +10,52 @@ const StepOTP = ({ onNext }) => {
   const [otpArray, setOtpArray] = useState(new Array(4).fill(""));
   const [loading, setLoading] = useState(false);
 
+  const inputsRef = useRef([]);
+
   const { displayTime, isExpired } = useCountdown({
     initialTimeInSeconds: 2 * 60,
   });
 
+  // 🔥 Updated OTP Change Logic (Auto Move)
   const handleOtpChange = (e, index) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
+    if (!value) return;
+
     const newOtpArray = [...otpArray];
     newOtpArray[index] = value;
     setOtpArray(newOtpArray);
+
+    // Move to next input automatically
+    if (index < 3) {
+      inputsRef.current[index + 1]?.focus();
+    }
+  };
+
+  // 🔥 Handle Backspace
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      if (otpArray[index]) {
+        const newOtpArray = [...otpArray];
+        newOtpArray[index] = "";
+        setOtpArray(newOtpArray);
+      } else if (index > 0) {
+        inputsRef.current[index - 1]?.focus();
+      }
+    }
+  };
+
+  // 🔥 Optional: Handle Paste (Very Professional Touch)
+  const handlePaste = (e) => {
+    const pastedData = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4);
+
+    if (pastedData.length === 4) {
+      const newOtpArray = pastedData.split("");
+      setOtpArray(newOtpArray);
+      inputsRef.current[3]?.focus();
+    }
   };
 
   const handleVerifyOtp = async (e) => {
@@ -39,12 +76,11 @@ const StepOTP = ({ onNext }) => {
 
       setUser(loggedUser);
 
-      // 🔥 If user already activated → skip account creation
       if (loggedUser.activateUser) {
         setStep(1);
         toggleModal();
       } else {
-        onNext(); // go to StepAccountCreation
+        onNext();
       }
     } catch (err) {
       alert("Invalid or expired OTP");
@@ -66,15 +102,20 @@ const StepOTP = ({ onNext }) => {
         {otpArray.map((digit, index) => (
           <input
             key={index}
+            ref={(el) => (inputsRef.current[index] = el)}
             type="text"
             maxLength={1}
             value={digit}
             onChange={(e) => handleOtpChange(e, index)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            onPaste={handlePaste}
             className="w-12 h-12 font-bold text-center rounded-md mx-1 border border-gray-200 outline-none"
           />
         ))}
+
         <button
           type="button"
+          onClick={() => setOtpArray(new Array(4).fill(""))}
           className="w-8 h-8 border border-gray-200 text-[#f74565] ml-1 font-bold rounded-md"
         >
           <IoClose size={24} />
@@ -93,6 +134,7 @@ const StepOTP = ({ onNext }) => {
       >
         {loading ? "Verifying..." : "Continue"}
       </button>
+
       <p className="text-[#c4c5c5] text-center m-auto text-[12px]">
         By entering your OTP, you're agreeing to our{" "}
         <a href="" className="text-[#f74565]">

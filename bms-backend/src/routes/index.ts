@@ -5,6 +5,7 @@ import showRouter from "../modules/show/show.routes";
 import userRouter from "../modules/user/user.route";
 import authRouter from "../modules/auth/auth.route";
 import bookingRouter from "../modules/booking/booking.route";
+import adminRouter from "../modules/admin/admin.route";
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use("/shows", showRouter);
 router.use("/users", userRouter);
 router.use("/auth", authRouter);
 router.use("/bookings", bookingRouter);
+router.use("/admin", adminRouter);
 
 export default router;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import mainLogo from "../assets/main-icon.png";
 import { FaSearch } from "react-icons/fa";
 import { useLocation } from "../context/LocationContext";
@@ -7,11 +7,30 @@ import { useNavigate } from "react-router-dom";
 import SignInModel from "./SignInModel";
 import { useAuth } from "../context/AuthContext";
 import { axiosWrapper } from "../apis/axiosWrapper";
+import { useQuery } from "@tanstack/react-query";
 
 const Header = () => {
   const { location, loading, error } = useLocation();
   const { toggleModal, user, setUser } = useAuth();
   const navigate = useNavigate();
+
+  const [search, setSearch] = useState("");
+
+  // 🔥 Fetch movies for search
+  const { data: movies = [] } = useQuery({
+    queryKey: ["movies"],
+    queryFn: async () => {
+      const res = await axiosWrapper.get("/movies");
+      return res.data.movies;
+    },
+  });
+
+  const filteredMovies =
+    search.length > 0
+      ? movies.filter((movie) =>
+          movie.title.toLowerCase().includes(search.toLowerCase()),
+        )
+      : [];
 
   const handleLogout = async () => {
     try {
@@ -41,9 +60,39 @@ const Header = () => {
               <input
                 type="text"
                 placeholder="Search for Movies, Events, Plays, Sports and Activities"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="border border-gray-300 rounded px-4 py-1.5 w-[400px] text-sm outline-none"
               />
               <FaSearch className="absolute right-2 top-2.5 text-gray-500" />
+
+              {/* 🔥 SEARCH DROPDOWN */}
+              {search && (
+                <div className="absolute top-10 left-0 w-[400px] bg-white shadow-lg rounded-md z-50 max-h-60 overflow-y-auto">
+                  {filteredMovies.length === 0 ? (
+                    <p className="p-3 text-gray-500 text-sm">
+                      No results found
+                    </p>
+                  ) : (
+                    filteredMovies.map((movie) => (
+                      <div
+                        key={movie._id}
+                        onClick={() => {
+                          navigate(
+                            `/movies/${location}/${encodeURIComponent(
+                              movie.title,
+                            )}/${movie._id}/ticket`,
+                          );
+                          setSearch("");
+                        }}
+                        className="p-3 hover:bg-gray-100 cursor-pointer text-sm"
+                      >
+                        {movie.title}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
