@@ -1,26 +1,8 @@
 import React from "react";
 import { languages } from "../../utils/constants";
 import MovieCard from "./MovieCard";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getAllMovies } from "../../apis";
 
-const MovieList = () => {
-  const {
-    data: movies,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["movies"],
-    queryFn: getAllMovies,
-    placeholderData: keepPreviousData,
-  });
-
-  if (isLoading) return <p className="text-gray-500">Loading movies...</p>;
-  if (isError) return <p className="text-red-500">Failed to load movies.</p>;
-
-  // Adjust based on your backend response shape
-  const movieArray = movies?.data?.movies || movies?.data || [];
-
+const MovieList = ({ allMovies = [] }) => {
   return (
     <div className="w-full md:w-3/4 p-4">
       <div className="flex flex-wrap gap-2 mb-4">
@@ -47,8 +29,10 @@ const MovieList = () => {
       </div>
 
       <div className="flex flex-wrap gap-6">
-        {Array.isArray(movieArray) && movieArray.length > 0 ? (
-          movieArray.map((movie, i) => <MovieCard key={i} movie={movie} />)
+        {allMovies.length > 0 ? (
+          allMovies.map((movie) => (
+            <MovieCard key={movie._id} movie={movie} />
+          ))
         ) : (
           <p className="text-gray-500">No movies found.</p>
         )}
