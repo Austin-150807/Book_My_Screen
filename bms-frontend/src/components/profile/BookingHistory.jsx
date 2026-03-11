@@ -44,21 +44,26 @@ const BookingHistory = () => {
       <h3 className="text-xl font-semibold mb-4">Your Orders</h3>
 
       {bookings.map((booking) => {
+        // 🔒 Prevent crash if data missing
+        if (!booking?.show || !booking.show?.movie || !booking.show?.theater) {
+          return null;
+        }
+
         const show = booking.show;
         const movie = show.movie;
         const theater = show.theater;
 
-        const ticketAmount = booking.totalAmount;
+        const ticketAmount = booking?.totalAmount || 0;
         const fee = Math.round(ticketAmount * 0.05);
         const total = ticketAmount + fee;
 
         return (
           <React.Fragment key={booking._id}>
             <div className="bg-white p-5 rounded-md mb-2 overflow-hidden">
-              <div className="flex items-start gap-10 ">
+              <div className="flex items-start gap-10">
                 <img
-                  src={movie.posterUrl}
-                  alt={movie.title}
+                  src={movie?.posterUrl}
+                  alt={movie?.title}
                   className="w-30 h-40 object-cover rounded"
                 />
 
@@ -66,26 +71,23 @@ const BookingHistory = () => {
 
                 <div className="flex items-start justify-between w-full">
                   <div className="flex-1">
-                    <p className="font-normal text-lg">{movie.title}</p>
+                    <p className="font-normal text-lg">{movie?.title}</p>
 
-                    <p className="text-sm text-gray-500">{show.audioType}</p>
+                    <p className="text-sm text-gray-500">{show?.audioType}</p>
 
-                    <p className="text-sm font-semibold text-gray-700 mt-2 ">
-                      {dayjs(show.date, "DD-MM-YYYY").format("D MMM YYYY")} -{" "}
-                      {theater.name}, {theater.city}
+                    <p className="text-sm font-semibold text-gray-700 mt-2">
+                      {dayjs(show?.date, "DD-MM-YYYY").format("D MMM YYYY")} -{" "}
+                      {theater?.name}, {theater?.city}
                     </p>
 
                     <small className="text-gray-700 mt-1">
-                      Quantity: {booking.seats.length}
+                      Quantity: {booking?.seats?.length || 0}
                     </small>
 
-                    <p className="text-md font-semibold text-gray-700 mt-2 ">
-                      <MdChair
-                        className="inline items-center mr-2 "
-                        size={24}
-                      />
-                      {booking.seats
-                        .map((seat) => `${seat.row}-${seat.number}`)
+                    <p className="text-md font-semibold text-gray-700 mt-2">
+                      <MdChair className="inline items-center mr-2" size={24} />
+                      {booking?.seats
+                        ?.map((seat) => `${seat.row}-${seat.number}`)
                         .join(", ")}
                     </p>
                   </div>
@@ -106,7 +108,7 @@ const BookingHistory = () => {
             <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-8">
               <div>
                 <p className="font-semibold">Booking Date & Time</p>
-                <p>{dayjs(booking.createdAt).format("D MMM YYYY, hh:mm A")}</p>
+                <p>{dayjs(booking?.createdAt).format("D MMM YYYY, hh:mm A")}</p>
               </div>
 
               <div>
@@ -116,7 +118,7 @@ const BookingHistory = () => {
 
               <div>
                 <p className="font-semibold">Booking ID</p>
-                <p>{booking._id}</p>
+                <p>{booking?._id}</p>
               </div>
             </div>
           </React.Fragment>

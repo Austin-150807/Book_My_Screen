@@ -1,22 +1,41 @@
 import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
-export const generateTicketPDF = ({
+export const generateTicketPDF = async ({
   showData,
-  selectedSeats,
-  totalAmount,
+  selectedSeats = [],
+  totalAmount = 0,
   bookingId,
 }) => {
   try {
     const doc = new jsPDF("p", "mm", "a4");
 
-    const seatList = selectedSeats
-      ?.map((seat) => `${seat.row}${seat.number}`)
-      .join(", ");
+    // ===============================
+    // SAFE DATA
+    // ===============================
+    const movieTitle = showData?.movie?.title || "Movie Title";
+    const theaterName = showData?.theater?.name || "Theater";
+    const theaterCity = showData?.theater?.city || "City";
+
+    const seatList =
+      selectedSeats?.map((seat) => `${seat.row}${seat.number}`).join(", ") ||
+      "N/A";
 
     const seatCount = selectedSeats?.length || 1;
-
     const finalBookingId = bookingId || "BMS-LUXE";
     const issueDate = new Date().toLocaleString();
+
+    // ===============================
+    // QR CODE DATA
+    // ===============================
+    const qrData = JSON.stringify({
+      bookingId: finalBookingId,
+      movie: movieTitle,
+      seats: seatList,
+      amount: totalAmount,
+    });
+
+    const qrImage = await QRCode.toDataURL(qrData);
 
     // ===============================
     // LUXURY STRIP DIMENSIONS
@@ -33,7 +52,7 @@ export const generateTicketPDF = ({
     doc.roundedRect(stripX, stripY, stripWidth, stripHeight, 4, 4, "F");
 
     // ===============================
-    // GOLD ACCENT LINE
+    // GOLD LINE
     // ===============================
     doc.setDrawColor(212, 175, 55);
     doc.setLineWidth(0.8);
@@ -61,14 +80,14 @@ export const generateTicketPDF = ({
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(15);
-    doc.text(showData.movie.title, 105, y, { align: "center" });
+    doc.text(movieTitle, 105, y, { align: "center" });
 
     y += 10;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(200, 200, 200);
-    doc.text(`${showData.theater?.name}, ${showData.theater?.city}`, 105, y, {
+    doc.text(`${theaterName}, ${theaterCity}`, 105, y, {
       align: "center",
     });
 
@@ -81,7 +100,7 @@ export const generateTicketPDF = ({
     doc.line(stripX + 15, y, stripX + stripWidth - 15, y);
 
     // ===============================
-    // DETAILS SECTION
+    // DETAILS
     // ===============================
     y += 15;
 
@@ -104,12 +123,19 @@ export const generateTicketPDF = ({
 
     y += 15;
 
+    // ===============================
     // TOTAL PAID
+    // ===============================
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.setTextColor(212, 175, 55);
     doc.text("TOTAL PAID", left, y);
-    doc.text(`₹ ${totalAmount}`, right, y, { align: "right" });
+    doc.text(`\u20B9 ${totalAmount}`, right, y, { align: "right" });
+
+    // ===============================
+    // QR CODE
+    // ===============================
+    doc.addImage(qrImage, "PNG", 85, y + 10, 40, 40);
 
     // ===============================
     // PERFORATION
@@ -122,13 +148,12 @@ export const generateTicketPDF = ({
     doc.setLineDash([]);
 
     // ===============================
-    // FOOTER ADMISSION SECTION
+    // FOOTER
     // ===============================
     doc.setTextColor(212, 175, 55);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
 
-    // 🔥 DYNAMIC ADMIT COUNT
     doc.text(`ADMIT ${seatCount}`, 105, perforationY + 18, {
       align: "center",
     });
@@ -136,6 +161,7 @@ export const generateTicketPDF = ({
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(170, 170, 170);
+
     doc.text(
       `${seatCount} Seat${seatCount > 1 ? "s" : ""} Admission`,
       105,
@@ -151,6 +177,9 @@ export const generateTicketPDF = ({
       { align: "center" },
     );
 
+    // ===============================
+    // SAVE PDF
+    // ===============================
     doc.save(`Luxury-Ticket-${finalBookingId}.pdf`);
   } catch (error) {
     console.error("PDF generation failed:", error);

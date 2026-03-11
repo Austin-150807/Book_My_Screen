@@ -34,7 +34,7 @@ const Checkout = () => {
   ============================ */
   const handlePayment = async () => {
     const options = {
-      key: "rzp_test_1DP5mmOlF5G5ag", // Test Key
+      key: "rzp_test_SPcSICW7xcRoYH", // Test Key
       amount: finalAmount * 100, // Razorpay uses paise
       currency: "INR",
       name: "BookMyScreen",
