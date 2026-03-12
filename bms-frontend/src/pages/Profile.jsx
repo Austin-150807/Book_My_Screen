@@ -14,7 +14,35 @@ const Profile = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔥 This enables direct opening of Orders tab
+  // local profile states
+  const [birthday, setBirthday] = useState("");
+  const [gender, setGender] = useState("");
+  const [married, setMarried] = useState("");
+
+  // restore saved values
+  useEffect(() => {
+    const savedProfile = JSON.parse(localStorage.getItem("profileDetails"));
+
+    if (savedProfile) {
+      setBirthday(savedProfile.birthday || "");
+      setGender(savedProfile.gender || "");
+      setMarried(savedProfile.married || "");
+    }
+  }, []);
+
+  // save values locally
+  useEffect(() => {
+    localStorage.setItem(
+      "profileDetails",
+      JSON.stringify({
+        birthday,
+        gender,
+        married,
+      }),
+    );
+  }, [birthday, gender, married]);
+
+  // enable opening Orders tab
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get("tab");
@@ -68,7 +96,7 @@ const Profile = () => {
         <div className="max-w-6xl mx-auto">
           {activeTab === "Profile" && (
             <>
-              {/* Header Section */}
+              {/* Header */}
               <div className="bg-gradient-to-r from-gray-800 to-[#f74565] rounded-t-md px-6 py-6 flex items-center gap-6 text-white">
                 <div className="relative w-20 h-20 border-4 border-white rounded-full flex items-center justify-center bg-white text-gray-600">
                   <IoMdAdd size={24} />
@@ -117,6 +145,7 @@ const Profile = () => {
                 <h3 className="text-lg font-semibold mb-4">Personal Details</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Name */}
                   <div>
                     <label className="text-sm font-normal">Name</label>
                     <input
@@ -127,39 +156,76 @@ const Profile = () => {
                     />
                   </div>
 
+                  {/* Birthday */}
                   <div>
                     <label className="text-sm font-normal">
                       Birthday (Optional)
                     </label>
                     <input
                       type="date"
+                      value={birthday}
+                      onChange={(e) => setBirthday(e.target.value)}
                       className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2"
                     />
                   </div>
 
+                  {/* Gender */}
                   <div>
                     <label className="text-sm font-normal">
                       Identity (Optional)
                     </label>
+
                     <div className="flex gap-2 mt-1">
-                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
+                      <button
+                        onClick={() => setGender("Woman")}
+                        className={`px-4 py-1 border rounded-lg ${
+                          gender === "Woman"
+                            ? "bg-pink-500 text-white"
+                            : "bg-white"
+                        }`}
+                      >
                         Woman
                       </button>
-                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
+
+                      <button
+                        onClick={() => setGender("Man")}
+                        className={`px-4 py-1 border rounded-lg ${
+                          gender === "Man"
+                            ? "bg-blue-500 text-white"
+                            : "bg-white"
+                        }`}
+                      >
                         Man
                       </button>
                     </div>
                   </div>
 
+                  {/* Married */}
                   <div>
                     <label className="text-sm font-normal">
                       Married ? (Optional)
                     </label>
+
                     <div className="flex gap-2 mt-1">
-                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
+                      <button
+                        onClick={() => setMarried("Yes")}
+                        className={`px-4 py-1 border rounded-lg ${
+                          married === "Yes"
+                            ? "bg-green-500 text-white"
+                            : "bg-white"
+                        }`}
+                      >
                         Yes
                       </button>
-                      <button className="px-4 py-1 border border-gray-200 rounded-lg bg-white">
+
+                      <button
+                        onClick={() => setMarried("No")}
+                        className={`px-4 py-1 border rounded-lg ${
+                          married === "No"
+                            ? "bg-red-500 text-white"
+                            : "bg-white"
+                        }`}
+                      >
                         No
                       </button>
                     </div>

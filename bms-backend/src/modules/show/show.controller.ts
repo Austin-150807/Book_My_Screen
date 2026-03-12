@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as ShowService from "./show.service";
-import { stat } from "fs";
 
-// 1. Create a show
+// Create show
 export const createShow = async (
   req: Request,
   res: Response,
@@ -16,7 +15,7 @@ export const createShow = async (
   }
 };
 
-// 2
+// Get shows by movie, date, location
 export const getShowsByMovieDateLocation = async (
   req: Request,
   res: Response,
@@ -24,6 +23,7 @@ export const getShowsByMovieDateLocation = async (
 ) => {
   try {
     const { movieId, state, date } = req.query;
+
     const shows = await ShowService.getShowsByMovieDateLocation(
       movieId as string,
       date as string,
@@ -36,7 +36,7 @@ export const getShowsByMovieDateLocation = async (
   }
 };
 
-// 3
+// Get single show
 export const getShowById = async (
   req: Request,
   res: Response,
@@ -50,7 +50,7 @@ export const getShowById = async (
   }
 };
 
-// 4
+// Update seat status
 export const updateSeatStatus = async (
   req: Request,
   res: Response,

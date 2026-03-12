@@ -34,9 +34,10 @@ const Header = ({ showData, type }) => {
               <h2 className="font-bold text-lg md:text-xl">
                 {showData?.movie.title}
               </h2>
+
               <p className="text-xs text-gray-500 font-semibold">
                 {dayjs(showData?.date, "DD-MM-YYYY").format("D MMM,")}{" "}
-                {dayjs(showData?.startTime, "HH:mm").format("hh:mm A")} at{" "}
+                {dayjs(showData?.startTime, "h:mm A").format("hh:mm A")} at{" "}
                 {`${showData?.theater?.name}, ${showData?.theater?.city}`}
               </p>
             </div>
@@ -71,20 +72,23 @@ const Header = ({ showData, type }) => {
                 <p className="text-xs text-gray-500 font-medium">
                   {dayjs(showData?.date, "DD-MM-YYYY").format("ddd")}
                 </p>
+
                 <p className="text-sm font-semibold text-gray-700">
                   {dayjs(showData?.date, "DD-MM-YYYY").format("DD MMMM")}
                 </p>
               </div>
 
-              {/* Time + Audio Type */}
+              {/* Time */}
               <button className="border cursor-pointer rounded-[14px] px-8 py-3 text-sm border-black font-medium bg-gray-200">
-                {dayjs(showData?.startTime, "HH:mm").format("hh:mm A")}
+                {dayjs(showData?.startTime, "h:mm A").format("hh:mm A")}
+
                 <p className="text-[10px] text-gray-500 -mt-1">
                   {showData?.audioType?.toUpperCase()}
                 </p>
               </button>
             </div>
           </div>
+
           <hr className="my-2 border-gray-300 max-w-7xl mx-auto" />
         </>
       )}
