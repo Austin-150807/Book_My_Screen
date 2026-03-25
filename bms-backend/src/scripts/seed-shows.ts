@@ -54,7 +54,7 @@ export const seedShow = async () => {
   for (const movie of movies) {
     for (const theatre of theatres) {
       for (let d = 0; d < 6; d++) {
-        // ✅ today and tomorrow
+        // ✅ 6 days
         const showDate = today.add(d, "day");
         const formattedDate = showDate.format("DD-MM-YYYY");
         const numShows = Math.floor(Math.random() * 3) + 2; // 2–4 shows

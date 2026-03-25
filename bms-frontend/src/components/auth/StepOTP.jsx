@@ -3,20 +3,22 @@ import { axiosWrapper } from "../../apis/axiosWrapper";
 import { useAuth } from "../../context/AuthContext";
 import { useCountdown } from "../../hooks/useCountdown";
 import { IoClose } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 const StepOTP = ({ onNext }) => {
-  const { email, hash, setUser, setStep, toggleModal } = useAuth();
+  // 🔥 ADD setHash here
+  const { email, hash, setHash, setUser, setStep, toggleModal } = useAuth();
 
   const [otpArray, setOtpArray] = useState(new Array(4).fill(""));
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const inputsRef = useRef([]);
 
-  const { displayTime, isExpired } = useCountdown({
+  const { displayTime, isExpired, reset } = useCountdown({
     initialTimeInSeconds: 2 * 60,
   });
 
-  // 🔥 Updated OTP Change Logic (Auto Move)
   const handleOtpChange = (e, index) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     if (!value) return;
@@ -25,13 +27,11 @@ const StepOTP = ({ onNext }) => {
     newOtpArray[index] = value;
     setOtpArray(newOtpArray);
 
-    // Move to next input automatically
     if (index < 3) {
       inputsRef.current[index + 1]?.focus();
     }
   };
 
-  // 🔥 Handle Backspace
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       if (otpArray[index]) {
@@ -44,7 +44,6 @@ const StepOTP = ({ onNext }) => {
     }
   };
 
-  // 🔥 Optional: Handle Paste (Very Professional Touch)
   const handlePaste = (e) => {
     const pastedData = e.clipboardData
       .getData("text")
@@ -73,8 +72,9 @@ const StepOTP = ({ onNext }) => {
       });
 
       const loggedUser = res.data.user;
-
       setUser(loggedUser);
+
+      toast.success("OTP Verified ✅");
 
       if (loggedUser.activateUser) {
         setStep(1);
@@ -83,9 +83,33 @@ const StepOTP = ({ onNext }) => {
         onNext();
       }
     } catch (err) {
-      alert("Invalid or expired OTP");
+      toast.error(err.response?.data?.message || "Invalid or expired OTP ❌");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔥 RESEND OTP (FIXED)
+  const handleResendOtp = async () => {
+    try {
+      setResendLoading(true);
+
+      const res = await axiosWrapper.post("/auth/resend-otp", {
+        email,
+      });
+
+      // ✅ CRITICAL: update hash
+      setHash(res.data.hash);
+
+      toast.success("OTP resent successfully 📩");
+
+      reset(); // restart timer
+      setOtpArray(new Array(4).fill(""));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to resend OTP ❌");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -94,6 +118,7 @@ const StepOTP = ({ onNext }) => {
       <h2 className="text-center text-lg font-semibold">
         Enter the code we just mailed you
       </h2>
+
       <p className="text-center text-sm text-gray-500">
         If you don't have an account, we'll create one for you.
       </p>
@@ -122,14 +147,26 @@ const StepOTP = ({ onNext }) => {
         </button>
       </div>
 
+      {/* TIMER / RESEND */}
       {isExpired ? (
-        <p className="text-center text-xs text-indigo-500">OTP expired.</p>
+        <div className="text-center">
+          <p className="text-xs text-red-500 mb-2">OTP expired</p>
+
+          <button
+            onClick={handleResendOtp}
+            disabled={resendLoading}
+            className="text-sm text-[#f74565] underline"
+          >
+            {resendLoading ? "Resending..." : "Resend OTP"}
+          </button>
+        </div>
       ) : (
         <p className="text-center text-sm">OTP expires in {displayTime}</p>
       )}
 
       <button
         onClick={handleVerifyOtp}
+        disabled={loading}
         className="w-full text-white bg-black py-2 rounded-md text-lg hover:bg-gray-800 transition"
       >
         {loading ? "Verifying..." : "Continue"}

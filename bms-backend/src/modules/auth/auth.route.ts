@@ -5,6 +5,7 @@ import { isVerifiedUser } from "../../middlewares/auth.middleware";
 const router = express.Router();
 
 router.post("/send-otp", AuthController.sendOtp);
+router.post("/resend-otp", AuthController.sendOtp); // using same logic for resend
 router.post("/verify-otp", AuthController.verifyOTP);
 router.post("/logout", isVerifiedUser, AuthController.logout);
 

@@ -3,17 +3,60 @@ import { IMovie } from "./movie.interface";
 
 const movieSchema = new mongoose.Schema<IMovie>(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    duration: { type: String, required: true },
-    genre: { type: [String], required: true },
-    releaseDate: { type: Date, required: true },
-    languages: { type: [String], required: true },
-    certification: { type: String, required: true },
-    posterUrl: { type: String, required: true },
-    rating: { type: Number, required: true },
-    votes: { type: Number, required: true },
-    format: { type: [String], default: ["2D"] },
+    title: {
+      type: String,
+      default: "Untitled Movie",
+    },
+
+    description: {
+      type: String,
+      default: "No description available",
+    },
+
+    duration: {
+      type: String,
+      default: "N/A",
+    },
+
+    genre: {
+      type: [String],
+      default: [],
+    },
+
+    releaseDate: {
+      type: Date,
+      default: Date.now,
+    },
+
+    languages: {
+      type: [String],
+      default: [],
+    },
+
+    certification: {
+      type: String,
+      default: "U",
+    },
+
+    posterUrl: {
+      type: String,
+      default: "https://via.placeholder.com/300x450?text=No+Image",
+    },
+
+    rating: {
+      type: Number,
+      default: 0,
+    },
+
+    votes: {
+      type: Number,
+      default: 0,
+    },
+
+    format: {
+      type: [String],
+      default: ["2D"],
+    },
   },
   { timestamps: true },
 );
